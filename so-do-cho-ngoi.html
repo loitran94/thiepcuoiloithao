@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sơ Đồ Bàn Tiệc Cưới</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#132235;
+    --navy-2:#1b3049;
+    --gold:#c9a227;
+    --gold-soft:#e4c766;
+    --cream:#f5efe6;
+    --bride:#e39ab4;
+    --bride-soft:#f3d3e0;
+    --groom:#4f8c86;
+    --groom-soft:#cfe4e0;
+    --danger:#c0575a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Jost', sans-serif;
+    background: radial-gradient(circle at 20% 0%, #1c3350 0%, var(--navy) 55%, #0e1a29 100%);
+    color: var(--cream);
+    min-height:100vh;
+  }
+  h1,h2,h3,.serif{ font-family:'Jost', sans-serif; }
+
+  .app{ display:flex; min-height:100vh; }
+
+  /* ---------- HEADER & STATS ---------- */
+  .topbar{
+    padding: 20px 32px;
+    border-bottom: 1px solid rgba(201,162,39,0.25);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .topbar-info .eyebrow-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .topbar-info .eyebrow{
+    letter-spacing:3px; text-transform:uppercase; font-size:11px; color: var(--gold-soft); opacity:.85;
+    font-weight: 600;
+  }
+  .topbar-info h1{
+    margin:4px 0 2px; font-size:30px; font-weight:700; color:var(--cream);
+  }
+  .topbar-info .names{ font-size:15px; color:rgba(245,239,230,0.65); }
+  .names input{
+    background:transparent; border:none; border-bottom:1px dashed rgba(245,239,230,0.35);
+    color:inherit; font-family:inherit; font-size:inherit; padding:1px 2px; width:120px;
+    text-align: center;
+  }
+  .names input:focus{ outline:none; border-bottom-color:var(--gold); }
+  #weddingDate { width: 100px; color: var(--gold-soft); }
+
+  .stats-header {
+    display: flex;
+    gap: 20px;
+    background: rgba(255,255,255,0.05);
+    padding: 10px 24px;
+    border-radius: 12px;
+    border: 1px solid rgba(201,162,39,0.2);
+    align-items: center;
+  }
+  .stats-header .stat-item {
+    text-align: center;
+  }
+  .stats-header .stat-item b {
+    color: var(--gold-soft);
+    font-size: 24px;
+    display: block;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stats-header .stat-item span {
+    font-size: 11px;
+    color: rgba(245,239,230,0.6);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+  }
+
+  /* ---------- LAYOUT ---------- */
+  .main-wrap{ display:flex; flex:1; width:100%; }
+  .sidebar{
+    width: 320px; flex-shrink:0;
+    background: rgba(9,16,26,0.55);
+    border-right:1px solid rgba(201,162,39,0.2);
+    padding: 20px 18px 40px;
+    display:flex; flex-direction:column; gap:16px;
+    max-height: calc(100vh - 100px);
+    overflow-y:auto;
+  }
+  .stage{ flex:1; padding: 26px 30px 60px; overflow:auto; max-height: calc(100vh - 100px); }
+
+  /* ---------- SIDEBAR ---------- */
+  .side-title{ font-size:18px; margin:0 0 2px; font-weight: 600; }
+  .side-sub{ font-size:12px; color:rgba(245,239,230,0.5); margin-bottom:6px; }
+
+  .search-box{
+    display:flex; align-items:center; gap:6px;
+    background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
+    border-radius:8px; padding:8px 10px;
+  }
+  .search-box input{
+    background:transparent; border:none; color:var(--cream); font-family:inherit; font-size:13px; width:100%;
+  }
+  .search-box input:focus{ outline:none; }
+
+  .filter-row{ display:flex; gap:6px; }
+  .chip-filter{
+    flex:1; text-align:center; padding:6px 4px; border-radius:20px; font-size:11px; cursor:pointer;
+    border:1px solid rgba(255,255,255,0.15); color:rgba(245,239,230,0.7); user-select:none;
+    transition: all .15s ease; font-weight: 500;
+  }
+  .chip-filter.active[data-side="all"]{ background:rgba(201,162,39,0.25); border-color:var(--gold); color:var(--cream);}
+  .chip-filter.active[data-side="bride"]{ background:rgba(227,154,180,0.3); border-color:var(--bride); color:var(--cream);}
+  .chip-filter.active[data-side="groom"]{ background:rgba(79,140,134,0.3); border-color:var(--groom); color:var(--cream);}
+
+  .legend{ display:flex; gap:14px; font-size:11px; color:rgba(245,239,230,0.6); }
+  .legend span{ display:inline-flex; align-items:center; gap:5px; }
+  .dot{ width:9px; height:9px; border-radius:50%; display:inline-block; }
+  .dot.bride{ background:var(--bride); }
+  .dot.groom{ background:var(--groom); }
+
+  #unassigned-list{
+    display:flex; flex-direction:column; gap:6px; min-height: 40px;
+    border-radius:10px; padding:4px; transition: background .15s;
+    max-height: 250px; overflow-y: auto;
+  }
+  #unassigned-list.drag-over{ background: rgba(201,162,39,0.12); }
+
+  .guest-chip{
+    display:flex; align-items:center; gap:8px;
+    background: rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.1);
+    border-left: 3px solid var(--gold);
+    border-radius:8px; padding:8px 10px;
+    font-size:13px; cursor:default; position:relative;
+  }
+  body.admin-mode .guest-chip { cursor: grab; }
+  .guest-chip.bride{ border-left-color: var(--bride); }
+  .guest-chip.groom{ border-left-color: var(--groom); }
+  body.admin-mode .guest-chip:active{ cursor:grabbing; }
+  .guest-chip .name{ flex:1; outline: none; }
+  .guest-chip .name[contenteditable="true"]{ background: rgba(255,255,255,0.15); padding: 0 4px; border-radius: 4px; cursor: text; }
+  .guest-chip .del{
+    opacity:0; font-size:14px; color:rgba(245,239,230,0.4); cursor:pointer; padding:2px 4px;
+  }
+  .guest-chip:hover .del{ opacity:1; }
+  .guest-chip .del:hover{ color: var(--danger); }
+
+  .empty-hint{ font-size:12px; color:rgba(245,239,230,0.35); text-align:center; padding:14px 4px; }
+
+  .add-guest-form{
+    display:none; flex-direction:column; gap:8px;
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);
+    border-radius:10px; padding:12px;
+  }
+  body.admin-mode .add-guest-form { display: flex; }
+  
+  .add-guest-form textarea{
+    background: rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.12);
+    color:var(--cream); font-family:inherit; font-size:12px; padding:7px 9px; border-radius:6px;
+    resize: vertical; min-height: 70px;
+  }
+  .add-guest-form select{
+    background: rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.12);
+    color:var(--cream); font-family:inherit; font-size:13px; padding:7px 9px; border-radius:6px;
+  }
+  .btn{
+    border:none; border-radius:7px; padding:8px 12px; font-family:inherit; font-size:13px;
+    cursor:pointer; font-weight:500; transition: transform .1s ease, opacity .15s;
+  }
+  .btn:active{ transform: scale(0.97); }
+  .btn-gold{ background: linear-gradient(180deg, var(--gold-soft), var(--gold)); color:#26200a; font-weight: 600; }
+  
+  /* Nút chuyển chế độ Admin */
+  .btn-admin-toggle {
+    background: rgba(255,255,255,0.1);
+    color: var(--gold-soft);
+    border: 1px solid rgba(201,162,39,0.3);
+    padding: 4px 10px;
+    font-size: 11px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+  .btn-admin-toggle.is-admin {
+    background: #c0575a;
+    color: #fff;
+    border-color: transparent;
+  }
+
+  /* ---------- STAGE / TABLES ---------- */
+  .stage-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .stage-header h2{ margin:0; font-size:22px; font-weight:600; }
+  .stage-header .hint{ font-size:12px; color:rgba(245,239,230,0.45); }
+
+  /* SÂN KHẤU TRUNG TÂM */
+  .wedding-stage-center {
+    background: linear-gradient(135deg, rgba(201,162,39,0.15) 0%, rgba(27,48,73,0.4) 100%);
+    border: 2px dashed var(--gold);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--gold-soft);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    box-shadow: inset 0 0 20px rgba(201,162,39,0.1);
+  }
+
+  .tables-grid{
+    display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap:55px 34px;
+  }
+
+  .table-card{ display:flex; flex-direction:column; align-items:center; }
+  .table-name-row{ display:flex; align-items:center; gap:6px; margin-bottom:10px; }
+  .table-name-row input{
+    background:transparent; border:none; text-align:center; color:var(--gold-soft);
+    font-family:inherit; font-size:16px; font-weight:600; width:130px;
+  }
+  .table-name-row input:focus{ outline:none; border-bottom:1px dashed var(--gold); }
+  .table-name-row .cap-badge{
+    font-size:11px; font-weight:500; color: rgba(245,239,230,0.5); border:1px solid rgba(255,255,255,0.15);
+    border-radius:20px; padding:2px 8px; white-space:nowrap;
+  }
+  
+  .table-name-row .del-table{
+    display: none; font-size:13px; color:rgba(245,239,230,0.3); cursor:pointer; padding:2px 5px;
+  }
+  body.admin-mode .table-name-row .del-table { display: inline-block; }
+  .table-name-row .del-table:hover{ color: var(--danger); }
+
+  .table-circle-wrap{
+    position:relative; width:250px; height:250px;
+  }
+  .table-top{
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:125px; height:125px; border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #24405e, #16283d 70%);
+    border: 2px solid var(--gold);
+    box-shadow: 0 0 0 6px rgba(201,162,39,0.08), inset 0 0 20px rgba(0,0,0,0.4);
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:600; color: var(--gold-soft); text-align:center; padding:6px;
+  }
+  .seat{
+    position:absolute; width:54px; height:54px; margin-left:-27px; margin-top:-27px;
+    border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:400; text-align:center; line-height:1.2; padding:3px; cursor:default;
+    border:1px dashed rgba(255,255,255,0.25); color:rgba(245,239,230,0.35);
+    background: rgba(255,255,255,0.03); transition: background .15s, border-color .15s;
+    word-break:break-word;
+  }
+  body.admin-mode .seat { cursor: grab; }
+  .seat.filled{ border-style:solid; color:var(--navy); font-weight:600; }
+  body.admin-mode .seat.filled { cursor: grab; }
+  .seat.filled.bride{ background: var(--bride-soft); border-color: var(--bride); }
+  .seat.filled.groom{ background: var(--groom-soft); border-color: var(--groom); }
+  .seat.drag-over{ border-color: var(--gold); background: rgba(201,162,39,0.18); color:var(--cream); }
+  .seat .del-seat{
+    position:absolute; top:-6px; right:-6px; background:var(--navy); border:1px solid var(--danger);
+    color:var(--danger); width:16px; height:16px; border-radius:50%; font-size:10px; line-height:14px;
+    text-align:center; opacity:0; cursor:pointer; z-index: 10;
+  }
+  body.admin-mode .seat:hover .del-seat{ opacity:1; }
+  .seat .seat-name-span { width:100%; height:100%; display:flex; align-items:center; justify-content:center; outline:none; }
+  .seat .seat-name-span[contenteditable="true"] { background: rgba(255,255,255,0.4); border-radius: 4px; cursor: text; color:#000; }
+
+  .add-table-card{
+    display:none;
+    flex-direction:column; align-items:center; justify-content:center;
+    width:250px; height:250px; margin-top:36px;
+    border:1.5px dashed rgba(201,162,39,0.4); border-radius:50%;
+    color: rgba(245,239,230,0.5); cursor:pointer; font-size:13px; gap:8px;
+    transition: border-color .15s, color .15s; font-weight: 500;
+  }
+  body.admin-mode .add-table-card { display: flex; }
+  .add-table-card:hover{ border-color: var(--gold); color: var(--gold-soft); }
+  .add-table-card .plus{ font-size:26px; line-height:1; font-weight: 600; }
+
+  ::-webkit-scrollbar{ width:8px; }
+  ::-webkit-scrollbar-thumb{ background: rgba(201,162,39,0.3); border-radius:4px; }
+
+  @media (max-width: 800px){
+    .main-wrap{ flex-direction:column; }
+    .sidebar{ width:100%; max-height:380px; border-right:none; border-bottom:1px solid rgba(201,162,39,0.2); }
+    .topbar { flex-direction: column; align-items: flex-start; }
+    .stats-header { width: 100%; justify-content: space-around; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app" style="flex-direction: column;">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-info">
+      <div class="eyebrow-container">
+        <div class="eyebrow">Sơ đồ chỗ ngồi</div>
+        <button id="adminToggleBtn" class="btn btn-admin-toggle" onclick="SecurityManager.toggleAdminMode()">🔒 Đăng nhập Admin</button>
+      </div>
+      <h1>Tiệc Cưới</h1>
+      <div class="names">
+        <input id="brideName" value="Thao Phạm" readonly /> &amp; <input id="groomName" value="Lợi Trần" readonly />
+        · <input id="weddingDate" value="09.08.2026" readonly />
+      </div>
+    </div>
+    
+    <div class="stats-header" id="statsBox"></div>
+  </div>
+
+  <div class="main-wrap">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div>
+        <div class="side-title">Khách chưa xếp bàn</div>
+        <div class="side-sub" id="sidebarHint">Chế độ xem sơ đồ (Chỉ đọc)</div>
+      </div>
+
+      <div class="search-box">
+        🔍 <input id="searchInput" placeholder="Tìm tên khách…" />
+      </div>
+
+      <div class="filter-row">
+        <div class="chip-filter active" data-side="all" onclick="setFilter('all')">Tất cả</div>
+        <div class="chip-filter" data-side="bride" onclick="setFilter('bride')">Cô dâu</div>
+        <div class="chip-filter" data-side="groom" onclick="setFilter('groom')">Chú rể</div>
+      </div>
+
+      <div class="legend">
+        <span><span class="dot bride"></span>Nhà cô dâu</span>
+        <span><span class="dot groom"></span>Nhà chú rể</span>
+      </div>
+
+      <div id="unassigned-list"></div>
+
+      <!-- Ô NHẬP TỪ EXCEL -->
+      <div class="add-guest-form">
+        <div style="font-size: 12px; color: var(--gold-soft); font-weight: 500;">Nhập tên Khách Mời (Mỗi tên 1 dòng):</div>
+        <textarea id="newGuestNames" placeholder="Nguyễn Văn A&#10;Trần Thị B&#10;Phạm Văn C..."></textarea>
+        <select id="newGuestSide">
+          <option value="bride">Nhà cô dâu</option>
+          <option value="groom">Nhà chú rể</option>
+        </select>
+        <button class="btn btn-gold" onclick="addGuestsExcel()">+ Thêm danh sách khách</button>
+      </div>
+    </div>
+
+    <!-- STAGE -->
+    <div class="stage">
+      <div class="stage-header">
+        <h2>Sơ đồ bàn</h2>
+        <div class="hint" id="stageHint">Mẹo: Sử dụng thanh tìm kiếm bên trái để tìm nhanh vị trí ghế của bạn</div>
+      </div>
+
+      <!-- KHU VỰC SÂN KHẤU TRUNG TÂM -->
+      <div class="wedding-stage-center">
+        ✨ KHU VỰC SÂN KHẤU CHÍNH ✨
+      </div>
+
+      <div class="tables-grid" id="tablesGrid"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------------- DATA & CONFIG ---------------- */
+let guests = [];
+let tables = [
+  {id:'t1', name:'Bàn số 1', capacity:10, seats:{}},
+  {id:'t2', name:'Bàn số 2', capacity:10, seats:{}},
+  {id:'t3', name:'Bàn số 3', capacity:10, seats:{}},
+];
+
+let currentFilter = 'all';
+let searchTerm = '';
+let dragData = null; 
+const STORAGE_KEY = 'wedding-seating-v1';
+
+/* ---------------- SECURITY MANAGER (GIẢI PHÁP AN TOÀN TUYỆT ĐỐI) ---------------- */
+const SecurityManager = (function() {
+  // Chuỗi mã hóa Base64 của "****" là "NTE5NA=="
+  const TARGET_B64 = "NTE5NA=="; 
+  let _isAdmin = false;
+
+  return {
+    checkAdmin: function() { return _isAdmin; },
+    toggleAdminMode: function() {
+      if (!_isAdmin) {
+        const pwd = prompt("Nhập mật mã xác thực quyền Admin (5194):");
+        if (pwd === null) return;
+        
+        const cleanPwd = pwd.trim();
+        
+        // Sử dụng btoa thay vì cơ chế mã hóa bất đồng bộ crypto để triệt tiêu lỗi môi trường Local/Mac
+        let encodedInput = "";
+        try {
+          encodedInput = btoa(cleanPwd);
+        } catch(e) {
+          encodedInput = "";
+        }
+        
+        if (encodedInput === TARGET_B64) {
+          _isAdmin = true;
+          document.body.classList.add('admin-mode');
+          document.getElementById('adminToggleBtn').textContent = "🔓 Thoát Admin";
+          document.getElementById('adminToggleBtn').classList.add('is-admin');
+          document.getElementById('sidebarHint').textContent = "Kéo thả khách hoặc click đúp vào tên để sửa đổi";
+          document.getElementById('stageHint').textContent = "Bấm đúp (Double-click) vào bất kì tên khách nào để chỉnh sửa nhanh";
+          
+          document.getElementById('brideName').removeAttribute('readonly');
+          document.getElementById('groomName').removeAttribute('readonly');
+          document.getElementById('weddingDate').removeAttribute('readonly');
+          renderAll();
+        } else {
+          alert("Mật mã không đúng! Trình duyệt đang nhận chuỗi: \"" + cleanPwd + "\"");
+        }
+      } else {
+        _isAdmin = false;
+        document.body.classList.remove('admin-mode');
+        document.getElementById('adminToggleBtn').textContent = "🔒 Đăng nhập Admin";
+        document.getElementById('adminToggleBtn').classList.remove('is-admin');
+        document.getElementById('sidebarHint').textContent = "Chế độ xem sơ đồ (Chỉ đọc)";
+        document.getElementById('stageHint').textContent = "Mẹo: Sử dụng thanh tìm kiếm bên trái để tìm nhanh vị trí ghế của bạn";
+        
+        document.getElementById('brideName').setAttribute('readonly', true);
+        document.getElementById('groomName').setAttribute('readonly', true);
+        document.getElementById('weddingDate').setAttribute('readonly', true);
+        renderAll();
+      }
+    }
+  };
+})();
+
+/* ---------------- PERSISTENCE ---------------- */
+async function saveState(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({guests, tables,
+      brideName: document.getElementById('brideName').value,
+      groomName: document.getElementById('groomName').value,
+      weddingDate: document.getElementById('weddingDate').value}));
+  }catch(e){ console.error('Save failed', e); }
+}
+async function loadState(){
+  try{
+    const res = localStorage.getItem(STORAGE_KEY);
+    if(res){
+      const data = JSON.parse(res);
+      if(data.guests) guests = data.guests;
+      if(data.tables) tables = data.tables;
+      if(data.brideName) document.getElementById('brideName').value = data.brideName;
+      if(data.groomName) document.getElementById('groomName').value = data.groomName;
+      if(data.weddingDate) document.getElementById('weddingDate').value = data.weddingDate;
+    }
+  }catch(e){ }
+}
+
+/* ---------------- HELPERS ---------------- */
+function seatedGuestIds(){
+  const s = new Set();
+  tables.forEach(t => Object.values(t.seats).forEach(gid => s.add(gid)));
+  return s;
+}
+function guestById(id){ return guests.find(g => g.id === id); }
+
+/* ---------------- RENDER: SIDEBAR ---------------- */
+function renderSidebar(){
+  const adminState = SecurityManager.checkAdmin();
+  const seated = seatedGuestIds();
+  const list = document.getElementById('unassigned-list');
+  list.innerHTML = '';
+
+  const filtered = guests.filter(g =>
+    !seated.has(g.id) &&
+    (currentFilter === 'all' || g.side === currentFilter) &&
+    g.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if(filtered.length === 0){
+    list.innerHTML = '<div class="empty-hint">Không còn khách nào chưa xếp bàn</div>';
+  }
+
+  filtered.forEach(g => {
+    const el = document.createElement('div');
+    el.className = 'guest-chip ' + g.side;
+    el.draggable = adminState;
+    el.dataset.guestId = g.id;
+    
+    el.innerHTML = `<span class="name" id="name-label-${g.id}">${g.name}</span>${adminState ? `<span class="del" onclick="deleteGuest('${g.id}')">✕</span>` : ''}`;
+    
+    if (adminState) {
+      const nameSpan = el.querySelector('.name');
+      nameSpan.addEventListener('dblclick', (e) => {
+        e.stopPropagation();
+        nameSpan.contentEditable = "true";
+        el.draggable = false;
+        nameSpan.focus();
+      });
+      nameSpan.addEventListener('blur', () => {
+        nameSpan.contentEditable = "false";
+        el.draggable = true;
+        const newName = nameSpan.textContent.trim();
+        if(newName && newName !== g.name) {
+          g.name = newName;
+          saveState();
+        } else {
+          nameSpan.textContent = g.name;
+        }
+      });
+      nameSpan.addEventListener('keydown', (e) => {
+        if(e.key === 'Enter') { e.preventDefault(); nameSpan.blur(); }
+      });
+
+      el.addEventListener('dragstart', e => {
+        if(nameSpan.contentEditable === "true") { e.preventDefault(); return; }
+        dragData = {guestId: g.id, fromTableId: null, fromSeatIndex: null};
+        e.dataTransfer.effectAllowed = 'move';
+      });
+    }
+    list.appendChild(el);
+  });
+
+  const total = guests.length;
+  const seatedCount = seated.size;
+  document.getElementById('statsBox').innerHTML = `
+    <div class="stat-item"><b>${total}</b><span>Tổng khách</span></div>
+    <div class="stat-item"><b style="color: #69b3a2;">${seatedCount}</b><span>Đã xếp chỗ</span></div>
+    <div class="stat-item"><b style="color: #e27d60;">${total - seatedCount}</b><span>Chưa xếp chỗ</span></div>
+    <div class="stat-item"><b>${tables.length}</b><span>Số bàn</span></div>
+  `;
+}
+
+/* ---------------- RENDER: TABLES ---------------- */
+function renderTables(){
+  const adminState = SecurityManager.checkAdmin();
+  const grid = document.getElementById('tablesGrid');
+  grid.innerHTML = '';
+
+  tables.forEach(table => {
+    const card = document.createElement('div');
+    card.className = 'table-card';
+
+    const nameRow = document.createElement('div');
+    nameRow.className = 'table-name-row';
+    
+    const filledCount = Object.keys(table.seats).length;
+    nameRow.innerHTML = `
+      <input value="${table.name}" onchange="renameTable('${table.id}', this.value)" ${!adminState ? 'readonly' : ''} />
+      <span class="cap-badge">${filledCount}/${table.capacity}</span>
+      <span class="del-table" onclick="deleteTable('${table.id}')">✕</span>
+    `;
+    card.appendChild(nameRow);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'table-circle-wrap';
+
+    const top = document.createElement('div');
+    top.className = 'table-top';
+    top.textContent = table.name;
+    wrap.appendChild(top);
+
+    const radius = 104; 
+    for(let i = 0; i < table.capacity; i++){
+      const angle = (2 * Math.PI * i / table.capacity) - Math.PI/2;
+      const x = 125 + radius * Math.cos(angle);
+      const y = 125 + radius * Math.sin(angle);
+      const guestId = table.seats[i];
+      const seat = document.createElement('div');
+      seat.style.left = x + 'px';
+      seat.style.top = y + 'px';
+      seat.dataset.tableId = table.id;
+      seat.dataset.seatIndex = i;
+
+      if(guestId && guestById(guestId)){
+        const g = guestById(guestId);
+        seat.className = 'seat filled ' + g.side;
+        seat.draggable = adminState;
+        
+        seat.innerHTML = `<span class="seat-name-span">${g.name}</span>${adminState ? `<span class="del-seat" onclick="event.stopPropagation(); removeFromSeat('${table.id}', ${i})">✕</span>` : ''}`;
+        
+        if (adminState) {
+          const seatNameSpan = seat.querySelector('.seat-name-span');
+          seatNameSpan.addEventListener('dblclick', (e) => {
+            e.stopPropagation();
+            seatNameSpan.contentEditable = "true";
+            seat.draggable = false;
+            seatNameSpan.focus();
+          });
+          seatNameSpan.addEventListener('blur', () => {
+            seatNameSpan.contentEditable = "false";
+            seat.draggable = true;
+            const newName = seatNameSpan.textContent.trim();
+            if(newName && newName !== g.name) {
+              g.name = newName;
+              renderSidebar(); 
+              saveState();
+            } else {
+              seatNameSpan.textContent = g.name;
+            }
+          });
+          seatNameSpan.addEventListener('keydown', (e) => {
+            if(e.key === 'Enter') { e.preventDefault(); seatNameSpan.blur(); }
+          });
+
+          seat.addEventListener('dragstart', e => {
+            if(seatNameSpan.contentEditable === "true") { e.preventDefault(); return; }
+            dragData = {guestId: g.id, fromTableId: table.id, fromSeatIndex: i};
+            e.dataTransfer.effectAllowed = 'move';
+          });
+        }
+      } else {
+        seat.className = 'seat';
+        seat.textContent = 'Trống';
+      }
+
+      if (adminState) {
+        seat.addEventListener('dragover', e => { e.preventDefault(); seat.classList.add('drag-over'); });
+        seat.addEventListener('dragleave', () => seat.classList.remove('drag-over'));
+        seat.addEventListener('drop', e => {
+          e.preventDefault();
+          seat.classList.remove('drag-over');
+          if(!dragData) return;
+          const targetGuestId = table.seats[i];
+          if(dragData.fromTableId){
+            delete tables.find(t => t.id === dragData.fromTableId).seats[dragData.fromSeatIndex];
+          }
+          if(targetGuestId && dragData.fromTableId){
+            tables.find(t => t.id === dragData.fromTableId).seats[dragData.fromSeatIndex] = targetGuestId;
+          }
+          table.seats[i] = dragData.guestId;
+          dragData = null;
+          renderAll(); saveState();
+        });
+      }
+
+      wrap.appendChild(seat);
+    }
+
+    card.appendChild(wrap);
+    grid.appendChild(card);
+  });
+
+  const addCard = document.createElement('div');
+  addCard.className = 'add-table-card';
+  addCard.onclick = addTable;
+  addCard.innerHTML = `<div class="plus">+</div><div>Thêm bàn</div>`;
+  grid.appendChild(addCard);
+}
+
+function renderAll(){ renderSidebar(); renderTables(); }
+
+/* ---------------- ACTIONS ---------------- */
+function setFilter(side){
+  currentFilter = side;
+  document.querySelectorAll('.chip-filter').forEach(c => c.classList.toggle('active', c.dataset.side === side));
+  renderSidebar();
+}
+
+function generateUniqueId() {
+  return 'g_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+}
+
+/* Nhập Excel đã sửa để lưu trạng thái ngay lập tức */
+function addGuestsExcel(){
+  if(!SecurityManager.checkAdmin()) return;
+  const textarea = document.getElementById('newGuestNames');
+  const text = textarea.value.trim();
+  if(!text) return;
+  
+  const lines = text.split('\n');
+  const side = document.getElementById('newGuestSide').value;
+  let count = 0;
+
+  lines.forEach(line => {
+    const name = line.trim();
+    if(name) {
+      guests.push({id: generateUniqueId(), name, side});
+      count++;
+    }
+  });
+
+  textarea.value = '';
+  alert(`Đã thêm thành công ${count} khách vào danh sách chưa xếp!`);
+  renderAll(); saveState();
+}
+
+function deleteGuest(id){
+  if(!SecurityManager.checkAdmin()) return;
+  guests = guests.filter(g => g.id !== id);
+  tables.forEach(t => { for(const k in t.seats){ if(t.seats[k] === id) delete t.seats[k]; } });
+  renderAll(); saveState();
+}
+
+function removeFromSeat(tableId, seatIndex){
+  if(!SecurityManager.checkAdmin()) return;
+  const t = tables.find(t => t.id === tableId);
+  if(t) delete t.seats[seatIndex];
+  renderAll(); saveState();
+}
+
+function renameTable(id, newName){
+  if(!SecurityManager.checkAdmin()) return;
+  const t = tables.find(t => t.id === id);
+  if(t) t.name = newName;
+  renderTables();
+  saveState();
+}
+
+function deleteTable(id){
+  if(!SecurityManager.checkAdmin()) return;
+  if(!confirm('Xoá bàn này? Khách trong bàn sẽ trở về danh sách chưa xếp.')) return;
+  tables = tables.filter(t => t.id !== id);
+  renderAll(); saveState();
+}
+
+function addTable(){
+  if(!SecurityManager.checkAdmin()) return;
+  const cap = parseInt(prompt('Số ghế cho bàn mới:', '10'), 10) || 10;
+  tables.push({id:'t' + Date.now(), name:'Bàn mới', capacity: cap, seats:{}});
+  renderAll(); saveState();
+}
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  searchTerm = e.target.value;
+  renderSidebar();
+});
+document.getElementById('brideName').addEventListener('change', saveState);
+document.getElementById('groomName').addEventListener('change', saveState);
+document.getElementById('weddingDate').addEventListener('change', saveState);
+
+/* ---------------- INIT ---------------- */
+(async function init(){
+  await loadState();
+  renderAll();
+})();
+</script>
+</body>
+</html>
