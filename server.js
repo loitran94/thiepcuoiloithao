@@ -12,7 +12,12 @@ const GOOGLE_SHEETS_WEBHOOK =
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname));
+app.use(express.static(__dirname)); // Dòng này giúp Vercel đọc được các file index.html, css, js của bạn
+
+// THÊM ĐOẠN NÀY: Định tuyến cho trang chủ
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html')); 
+});
 
 // Bỏ đoạn tạo folder fs.mkdirSync vì Vercel không cho phép ghi dữ liệu ổ đĩa
 
