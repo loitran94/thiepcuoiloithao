@@ -12,6 +12,11 @@ const GOOGLE_SHEETS_WEBHOOK =
 app.use(cors());
 app.use(express.json());
 
+// THÊM ĐOẠN NÀY VÀO: Để Express tự trả về file index.html từ thư mục gốc
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../index.html'));
+});
+
 // SAVE RSVP DATA
 app.post('/api/rsvp', async (req, res) => {
   try {
