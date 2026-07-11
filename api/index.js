@@ -12,18 +12,6 @@ const GOOGLE_SHEETS_WEBHOOK =
 app.use(cors());
 app.use(express.json());
 
-// 1. Cho phép tải các file ngay tại thư mục gốc (index.html, style.css, script.js)
-app.use(express.static(path.join(__dirname)));
-
-// 2. Cho phép tải dữ liệu từ các thư mục con của bạn
-app.use('/music', express.static(path.join(__dirname, 'music')));
-app.use('/images', express.static(path.join(__dirname, 'images')));
-
-// Định tuyến trang chủ (Đã dọn dẹp phần trùng lặp)
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
 // SAVE RSVP DATA
 app.post('/api/rsvp', async (req, res) => {
   try {
