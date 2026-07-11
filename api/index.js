@@ -11,8 +11,9 @@ const GOOGLE_SHEETS_WEBHOOK =
 // Middleware
 app.use(cors());
 app.use(express.json());
-
-// THÊM ĐOẠN NÀY VÀO: Để Express tự trả về file index.html từ thư mục gốc
+// THÊM DÒNG NÀY: Để định nghĩa lại thư mục gốc cho các file tĩnh (css, js, images, music)
+app.use(express.static(path.join(__dirname, '../')));
+// Định tuyến trang chủ
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../index.html'));
 });
