@@ -12,7 +12,14 @@ const GOOGLE_SHEETS_WEBHOOK =
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname)); // Dòng này giúp Vercel đọc được các file index.html, css, js của bạn
+app.use(express.static(__dirname)); 
+
+// THÊM CÁC DÒNG NÀY (Bổ sung thư mục nào bạn đang có trong dự án):
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.use('/css', express.static(path.join(__dirname, 'css')));
+app.use('/js', express.static(path.join(__dirname, 'js')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/img', express.static(path.join(__dirname, 'img'))); // Nếu có thư mục tên img
 
 // THÊM ĐOẠN NÀY: Định tuyến cho trang chủ
 app.get('/', (req, res) => {
