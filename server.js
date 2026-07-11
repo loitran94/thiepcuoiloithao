@@ -1,5 +1,4 @@
 const express = require('express');
-const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
 const https = require('https');
@@ -12,28 +11,24 @@ const GOOGLE_SHEETS_WEBHOOK =
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname)); 
 
-// THÊM CÁC DÒNG NÀY (Bổ sung thư mục nào bạn đang có trong dự án):
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
-app.use('/css', express.static(path.join(__dirname, 'css')));
-app.use('/js', express.static(path.join(__dirname, 'js')));
+// 1. Cho phép tải các file ngay tại thư mục gốc (index.html, style.css, script.js)
+app.use(express.static(path.join(__dirname)));
+
+// 2. Cho phép tải dữ liệu từ các thư mục con của bạn
+app.use('/music', express.static(path.join(__dirname, 'music')));
 app.use('/images', express.static(path.join(__dirname, 'images')));
-app.use('/img', express.static(path.join(__dirname, 'img'))); // Nếu có thư mục tên img
 
-// THÊM ĐOẠN NÀY: Định tuyến cho trang chủ
+// Định tuyến trang chủ (Đã dọn dẹp phần trùng lặp)
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html')); 
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
-
-// Bỏ đoạn tạo folder fs.mkdirSync vì Vercel không cho phép ghi dữ liệu ổ đĩa
 
 // SAVE RSVP DATA
 app.post('/api/rsvp', async (req, res) => {
   try {
     const { name, quantity, wish } = req.body;
 
-    // Validate input
     if (!name || !quantity) {
       return res.status(400).json({ error: 'Vui lòng nhập họ tên và số lượng' });
     }
@@ -43,7 +38,6 @@ app.post('/api/rsvp', async (req, res) => {
     const parsedQuantity = parseInt(quantity, 10);
     const timestamp = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
 
-    // Create RSVP object
     const rsvpData = {
       id: Date.now(),
       name: trimmedName,
@@ -53,15 +47,11 @@ app.post('/api/rsvp', async (req, res) => {
     };
 
     let googleSheetsSynced = false;
-
     try {
       googleSheetsSynced = await syncRsvpToGoogleSheets(rsvpData);
     } catch (syncError) {
       console.error('Google Sheets sync failed:', syncError);
     }
-
-    // LƯU Ý: Đã bỏ đoạn ghi file rsvp.json cục bộ để tránh lỗi Hệ thống file Read-only trên Vercel.
-    // Dữ liệu bây giờ sẽ phụ thuộc hoàn toàn vào Google Sheets của bạn.
 
     res.json({ 
       success: true, 
@@ -115,10 +105,8 @@ app.get('/api/rsvp', (req, res) => {
   try {
     fetchRsvpFromGoogleSheets()
       .then((remoteList) => {
-        if (remoteList) {
-          return res.json(remoteList);
-        }
-        return res.json([]); // Trả về mảng rỗng nếu không lấy được từ Google Sheets
+        if (remoteList) return res.json(remoteList);
+        return res.json([]);
       })
       .catch((error) => {
         console.error('Google Sheets read failed:', error);
@@ -139,9 +127,7 @@ function fetchRsvpFromGoogleSheets() {
         method: 'GET',
         hostname: requestUrl.hostname,
         path: `${requestUrl.pathname}${requestUrl.search}`,
-        headers: {
-          Accept: 'application/json, text/plain;q=0.9, */*;q=0.8'
-        }
+        headers: { Accept: 'application/json, text/plain;q=0.9, */*;q=0.8' }
       },
       (response) => {
         let responseBody = '';
@@ -179,7 +165,6 @@ function normalizeRsvpList(payload) {
   return null;
 }
 
-// Chỉ chạy app.listen khi test ở máy cá nhân (Local)
 if (process.env.NODE_ENV !== 'production') {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
@@ -187,5 +172,4 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-// QUAN TRỌNG: Xuất cấu hình app để Vercel Serverless có thể chạy được
 module.exports = app;
